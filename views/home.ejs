@@ -1,0 +1,86 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-content">
+      <p class="hero-greeting">Hi, I'm</p>
+      <h1 class="hero-name"><%= profile.name %></h1>
+      <p class="hero-title"><%= profile.title %> @ <%= profile.university %></p>
+      <p class="hero-tagline"><%= profile.tagline %></p>
+      <div class="hero-actions">
+        <a href="/projects" class="btn btn-primary">View Projects</a>
+        <a href="/contact" class="btn btn-outline">Get in Touch</a>
+      </div>
+      <div class="hero-meta">
+        <span><%= profile.location %></span>
+        <span class="dot">·</span>
+        <span><%= profile.year %></span>
+      </div>
+    </div>
+    <div class="hero-terminal" aria-hidden="true">
+      <div class="terminal-bar">
+        <span class="dot red"></span>
+        <span class="dot yellow"></span>
+        <span class="dot green"></span>
+        <span class="terminal-title">martin@portfolio ~</span>
+      </div>
+      <pre class="terminal-body"><code><span class="prompt">$</span> whoami
+<span class="output">martin_kuria — cs_student</span>
+
+<span class="prompt">$</span> cat currently_learning.txt
+<% profile.currentlyLearning.forEach(function(item) { -%>
+<span class="output">→ <%= item %></span>
+<% }); -%>
+
+<span class="prompt">$</span> echo $STATUS
+<span class="output accent">Open to internships &amp; collabs</span><span class="cursor">▊</span></code></pre>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-header">
+      <h2>Featured Work</h2>
+      <a href="/projects" class="link-arrow">See all projects →</a>
+    </div>
+    <div class="project-grid">
+      <% featuredProjects.forEach(function(project) { %>
+        <article class="project-card">
+          <div class="project-card-top">
+            <span class="project-status"><%= project.status %></span>
+            <span class="project-year"><%= project.year %></span>
+          </div>
+          <h3><a href="/projects/<%= project.slug %>"><%= project.title %></a></h3>
+          <p class="project-tagline"><%= project.tagline %></p>
+          <ul class="tech-tags">
+            <% project.tech.slice(0, 4).forEach(function(t) { %>
+              <li><%= t %></li>
+            <% }); %>
+          </ul>
+        </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container split-section">
+    <div>
+      <h2>Quick About</h2>
+      <p class="lead"><%= profile.bio.split('.')[0] %>.</p>
+      <a href="/about" class="btn btn-outline btn-sm">Read more about me</a>
+    </div>
+    <div class="interest-pills">
+      <h3>Interests</h3>
+      <ul class="pill-list">
+        <% profile.interests.forEach(function(interest) { %>
+          <li><%= interest %></li>
+        <% }); %>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,74 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Contact</h1>
+    <p class="page-subtitle">Have a project idea, internship opening, or just want to say hi?</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <p class="lead">I'm always happy to connect with fellow developers, potential collaborators, or anyone building cool things in tech. Drop me a message — I usually reply within a day or two.</p>
+
+      <div class="contact-cards">
+        <a href="mailto:<%= profile.email %>" class="contact-card">
+          <span class="contact-icon">✉</span>
+          <div>
+            <strong>Email</strong>
+            <span><%= profile.email %></span>
+          </div>
+        </a>
+        <a href="<%= profile.github %>" class="contact-card" target="_blank" rel="noopener noreferrer">
+          <span class="contact-icon">{ }</span>
+          <div>
+            <strong>GitHub</strong>
+            <span>@MartinKuria254</span>
+          </div>
+        </a>
+        <a href="<%= profile.linkedin %>" class="contact-card" target="_blank" rel="noopener noreferrer">
+          <span class="contact-icon">in</span>
+          <div>
+            <strong>LinkedIn</strong>
+            <span>Martin Kuria</span>
+          </div>
+        </a>
+      </div>
+
+      <p class="contact-note"><%= profile.location %> · Available for remote internships</p>
+    </div>
+
+    <div class="contact-form-wrap">
+      <% if (typeof sent !== 'undefined' && sent) { %>
+        <div class="alert alert-success">
+          <strong>Message received!</strong>
+          <p>Thanks for reaching out. I'll get back to you soon. (Note: this demo doesn't persist messages — no database yet!)</p>
+        </div>
+      <% } %>
+
+      <form class="contact-form" action="/contact" method="POST">
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input type="text" id="name" name="name" required placeholder="Your name">
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required placeholder="you@example.com">
+        </div>
+        <div class="form-group">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" required placeholder="Internship inquiry, collab, etc.">
+        </div>
+        <div class="form-group">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="5" required placeholder="Tell me about your project or opportunity..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

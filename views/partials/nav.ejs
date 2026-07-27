@@ -1,0 +1,20 @@
+<header class="site-header">
+  <nav class="nav container" aria-label="Main navigation">
+    <a href="/" class="nav-logo">
+      <span class="logo-bracket">&lt;</span>MK<span class="logo-bracket">/&gt;</span>
+    </a>
+    <button class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <ul class="nav-links">
+      <li><a href="/" class="<%= activePage === 'home' ? 'active' : '' %>">Home</a></li>
+      <li><a href="/about" class="<%= activePage === 'about' ? 'active' : '' %>">About</a></li>
+      <li><a href="/projects" class="<%= activePage === 'projects' ? 'active' : '' %>">Projects</a></li>
+      <li><a href="/skills" class="<%= activePage === 'skills' ? 'active' : '' %>">Skills</a></li>
+      <li><a href="/contact" class="<%= activePage === 'contact' ? 'active' : '' %>">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+<main>

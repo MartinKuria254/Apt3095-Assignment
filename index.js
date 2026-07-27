@@ -1,219 +1,82 @@
-// ***************************************************************************
-// Bank API code from Web Dev For Beginners project
-// https://github.com/microsoft/Web-Dev-For-Beginners/tree/main/7-bank-project/api
-// ***************************************************************************
-
 const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors')
-const crypto = require('crypto');
-const pkg = require('./package.json');
+const path = require('path');
+const portfolio = require('./data/portfolio');
 
-
-// App constants
 const port = process.env.PORT || 3000;
-const apiPrefix = '/api';
-
-// Store data in-memory, not suited for production use!
-const db = {
-    test: {
-      user: 'test',
-      currency: '$',
-      description: `Test account`,
-      balance: 75,
-      transactions: [
-        { id: '1', date: '2020-10-01', object: 'Pocket money', amount: 50 },
-        { id: '2', date: '2020-10-03', object: 'Book', amount: -10 },
-        { id: '3', date: '2020-10-04', object: 'Sandwich', amount: -5 }
-      ],
-    },
-    jondoe: {
-        user: 'jondoe',
-        currency: '$',
-        description: `Second test account`,
-        balance: 150,
-        transactions: [
-          { id: '1', date: '2022-10-01', object: 'Gum', amount: -2 },
-          { id: '2', date: '2022-10-03', object: 'Book', amount: -10 },
-          { id: '3', date: '2022-10-04', object: 'Restaurant', amount: -45 }
-        ],
-      }
-  
-  };
-  
-// Create the Express app & setup middlewares
 const app = express();
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json());
-app.use(cors({ origin: /http:\/\/(127(\.\d){3}|localhost)/}));
-app.options('*', cors());
 
-// ***************************************************************************
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-// Configure routes
-const router = express.Router();
+app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true }));
 
-// Hello World for index page
-app.get('/', function (req, res) {
-    return res.send("Hello World!");
-})
-
-app.get('/api', function (req, res) {
-    return res.send("Fabrikam Bank API");
-})
-  
-// ----------------------------------------------
-  // Create an account
-router.post('/accounts', (req, res) => {
-    // Check mandatory request parameters
-    if (!req.body.user || !req.body.currency) {
-      return res.status(400).json({ error: 'Missing parameters' });
-    }
-  
-    // Check if account already exists
-    if (db[req.body.user]) {
-      return res.status(409).json({ error: 'User already exists' });
-    }
-  
-    // Convert balance to number if needed
-    let balance = req.body.balance;
-    if (balance && typeof balance !== 'number') {
-      balance = parseFloat(balance);
-      if (isNaN(balance)) {
-        return res.status(400).json({ error: 'Balance must be a number' });  
-      }
-    }
-  
-    // Create account
-    const account = {
-      user: req.body.user,
-      currency: req.body.currency,
-      description: req.body.description || `${req.body.user}'s budget`,
-      balance: balance || 0,
-      transactions: [],
-    };
-    db[req.body.user] = account;
-  
-    return res.status(201).json(account);
+function render(res, view, options = {}) {
+  return res.render(view, {
+    profile: portfolio.profile,
+    education: portfolio.education,
+    experience: portfolio.experience,
+    skills: portfolio.skills,
+    projects: portfolio.projects,
+    ...options,
   });
-  
-// ----------------------------------------------
+}
 
-// Get all data for the specified account
-router.get('/accounts/:user', (req, res) => {
-    const account = db[req.params.user];
-  
-    // Check if account exists
-    if (!account) {
-      return res.status(404).json({ error: 'User does not exist' });
-    }
-  
-    return res.json(account);
-  });
-  
-  // ----------------------------------------------
-  
-// Remove specified account
-router.delete('/accounts/:user', (req, res) => {
-    const account = db[req.params.user];
-  
-    // Check if account exists
-    if (!account) {
-      return res.status(404).json({ error: 'User does not exist' });
-    }
-  
-    // Removed account
-    delete db[req.params.user];
-  
-    res.sendStatus(204);
-  });
-  
-  // ----------------------------------------------
-  
-  // Add a transaction to a specific account
-  router.post('/accounts/:user/transactions', (req, res) => {
-    const account = db[req.params.user];
-  
-    // Check if account exists
-    if (!account) {
-      return res.status(404).json({ error: 'User does not exist' });
-    }
-  
-    // Check mandatory requests parameters
-    if (!req.body.date || !req.body.object || !req.body.amount) {
-      return res.status(400).json({ error: 'Missing parameters' });
-    }
-  
-    // Convert amount to number if needed
-    let amount = req.body.amount;
-    if (amount && typeof amount !== 'number') {
-      amount = parseFloat(amount);
-    }
-  
-    // Check that amount is a valid number
-    if (amount && isNaN(amount)) {
-      return res.status(400).json({ error: 'Amount must be a number' });
-    }
-  
-    // Generates an ID for the transaction
-    const id = crypto
-      .createHash('md5')
-      .update(req.body.date + req.body.object + req.body.amount)
-      .digest('hex');
-  
-    // Check that transaction does not already exist
-    if (account.transactions.some((transaction) => transaction.id === id)) {
-      return res.status(409).json({ error: 'Transaction already exists' });
-    }
-  
-    // Add transaction
-    const transaction = {
-      id,
-      date: req.body.date,
-      object: req.body.object,
-      amount,
-    };
-    account.transactions.push(transaction);
-  
-    // Update balance
-    account.balance += transaction.amount;
-  
-    return res.status(201).json(transaction);
-  });
-  
-  // ----------------------------------------------
-  
-  // Remove specified transaction from account
-  router.delete('/accounts/:user/transactions/:id', (req, res) => {
-    const account = db[req.params.user];
-  
-    // Check if account exists
-    if (!account) {
-      return res.status(404).json({ error: 'User does not exist' });
-    }
-  
-    const transactionIndex = account.transactions.findIndex(
-      (transaction) => transaction.id === req.params.id
-    );
-  
-    // Check if transaction exists
-    if (transactionIndex === -1) {
-      return res.status(404).json({ error: 'Transaction does not exist' });
-    }
-  
-    // Remove transaction
-    account.transactions.splice(transactionIndex, 1);
-  
-    res.sendStatus(204);
-  });
-  
-// ***************************************************************************
-
-// Add 'api` prefix to all routes
-app.use(apiPrefix, router);
-
-// Start the server
-app.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+app.get('/', (req, res) => {
+  const featuredProjects = portfolio.projects.filter((p) => p.featured);
+  render(res, 'home', { activePage: 'home', featuredProjects });
 });
-  
+
+app.get('/about', (req, res) => {
+  render(res, 'about', {
+    activePage: 'about',
+    pageTitle: 'About',
+    metaDescription: `About ${portfolio.profile.name} — ${portfolio.profile.title}`,
+  });
+});
+
+app.get('/projects', (req, res) => {
+  render(res, 'projects', {
+    activePage: 'projects',
+    pageTitle: 'Projects',
+  });
+});
+
+app.get('/projects/:slug', (req, res) => {
+  const project = portfolio.projects.find((p) => p.slug === req.params.slug);
+  if (!project) {
+    return render(res, '404', { activePage: 'projects' }).status(404);
+  }
+  render(res, 'project-detail', {
+    activePage: 'projects',
+    pageTitle: project.title,
+    project,
+  });
+});
+
+app.get('/skills', (req, res) => {
+  render(res, 'skills', {
+    activePage: 'skills',
+    pageTitle: 'Skills',
+  });
+});
+
+app.get('/contact', (req, res) => {
+  render(res, 'contact', {
+    activePage: 'contact',
+    pageTitle: 'Contact',
+    sent: req.query.sent === '1',
+  });
+});
+
+app.post('/contact', (req, res) => {
+  res.redirect('/contact?sent=1');
+});
+
+app.use((req, res) => {
+  render(res, '404', { activePage: '' }).status(404);
+});
+
+app.listen(port, () => {
+  console.log(`Martin's portfolio running at http://localhost:${port}`);
+});

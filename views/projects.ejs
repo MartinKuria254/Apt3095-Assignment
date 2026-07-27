@@ -1,0 +1,40 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Projects</h1>
+    <p class="page-subtitle"><%= projects.length %> things I've built (and a few still cooking)</p>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="project-list">
+      <% projects.forEach(function(project) { %>
+        <article class="project-row" id="<%= project.slug %>">
+          <div class="project-row-meta">
+            <span class="project-status"><%= project.status %></span>
+            <span class="project-year"><%= project.year %></span>
+          </div>
+          <div class="project-row-body">
+            <h2><a href="/projects/<%= project.slug %>"><%= project.title %></a></h2>
+            <p class="project-tagline"><%= project.tagline %></p>
+            <p><%= project.description %></p>
+            <ul class="tech-tags">
+              <% project.tech.forEach(function(t) { %>
+                <li><%= t %></li>
+              <% }); %>
+            </ul>
+            <div class="project-row-links">
+              <a href="/projects/<%= project.slug %>" class="link-arrow">Details →</a>
+              <a href="<%= project.links.repo %>" target="_blank" rel="noopener noreferrer">GitHub</a>
+            </div>
+          </div>
+        </article>
+      <% }); %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/footer') %>

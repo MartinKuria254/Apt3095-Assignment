@@ -1,0 +1,51 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<section class="page-hero">
+  <div class="container">
+    <a href="/projects" class="back-link">← All projects</a>
+    <h1><%= project.title %></h1>
+    <p class="page-subtitle"><%= project.tagline %></p>
+    <div class="project-detail-meta">
+      <span class="project-status"><%= project.status %></span>
+      <span class="project-year"><%= project.year %></span>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container project-detail-grid">
+    <div class="project-detail-main">
+      <h2>Overview</h2>
+      <p class="lead"><%= project.description %></p>
+
+      <h2>Highlights</h2>
+      <ul class="highlight-list">
+        <% project.highlights.forEach(function(h) { %>
+          <li><%= h %></li>
+        <% }); %>
+      </ul>
+
+      <h2>Tech Stack</h2>
+      <ul class="tech-tags tech-tags-lg">
+        <% project.tech.forEach(function(t) { %>
+          <li><%= t %></li>
+        <% }); %>
+      </ul>
+    </div>
+
+    <aside class="project-detail-sidebar">
+      <div class="info-card">
+        <h3>Links</h3>
+        <div class="sidebar-links">
+          <a href="<%= project.links.repo %>" class="btn btn-outline btn-block" target="_blank" rel="noopener noreferrer">View on GitHub</a>
+          <% if (project.links.demo && project.links.demo !== '#') { %>
+            <a href="<%= project.links.demo %>" class="btn btn-primary btn-block" target="_blank" rel="noopener noreferrer">Live Demo</a>
+          <% } %>
+        </div>
+      </div>
+    </aside>
+  </div>
+</section>
+
+<%- include('partials/footer') %>
